@@ -12,4 +12,4 @@ st.write("This is my deployed website.")
 name = st.text_input("Enter your name")
 
 if st.button("Submit"):
-    st.success(f"Hello, {name}!")
+    st.success(f"Hello, {name}, Good Morning!")
