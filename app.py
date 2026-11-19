@@ -7,12 +7,11 @@ import streamlit as st
 from groq import Groq
 from pymongo import MongoClient
 
-from config import GROQ_MODEL, CONTEXT_TOKEN_BUDGET, RAG_TOP_K, MAX_LLM_CALLS_PER_SESSION
-from memory_vectors import feature_vector
+from config import MAX_LLM_CALLS_PER_SESSION
+from memory_lab_core import probe_match, run_answer
 
-st.set_page_config(page_title="Memory Lab", page_icon="🧠", layout="wide")
+st.set_page_config(page_title="Memory Lab", layout="wide")
 STRATEGIES = {"No Memory": "no_memory", "Plain RAG": "rag", "Rolling Summary": "summary", "Graph Memory": "graph"}
-SYSTEM_PROMPT = "You are a helpful chat assistant in a long-term memory research demo. Use only context provided below as remembered facts. If the context does not answer the question, say so plainly. Treat current facts as authoritative and use superseded facts only when asked about history. Keep responses clear and avoid claiming certainty beyond the evidence.\n\nMEMORY CONTEXT:\n{context}"
 
 
 def friendly_error(label):
@@ -51,73 +50,13 @@ def load_insights():
     return list(get_db().results.find({}, {"_id": 0}))
 
 
-def clip_context(text):
-    # A conservative word-based approximation keeps each strategy within the shared context allowance.
-    return " ".join(text.split()[: CONTEXT_TOKEN_BUDGET * 3 // 4])
-
-
-def build_memory(strategy, persona_id, question):
-    try:
-        return _build_memory(strategy, persona_id, question)
-    except Exception as exc:
-        raise RuntimeError("Memory lookup failed") from exc
-
-
-def _build_memory(strategy, persona_id, question):
-    if strategy == "no_memory":
-        return "No long-term memory is available for this strategy.", {"kind": "none", "items": []}
-    db = get_db()
-    if strategy == "rag":
-        qvec = feature_vector(question).astype(float)
-        docs = list(db.chunks.find({"persona_id": persona_id}, {"_id": 0}).limit(500))
-        scored = []
-        qnorm = np.linalg.norm(qvec)
-        for doc in docs:
-            vec = np.asarray(doc.get("embedding", []), dtype=float)
-            denom = qnorm * np.linalg.norm(vec)
-            similarity = float(np.dot(qvec, vec) / denom) if denom else 0.0
-            scored.append((similarity, doc))
-        selected = sorted(scored, key=lambda x: x[0], reverse=True)[:RAG_TOP_K]
-        items = [{"session_id": d.get("session_id"), "similarity": round(score, 3), "text": d.get("text", "")} for score, d in selected]
-        return clip_context("\n".join(x["text"] for x in items) or "No matching history was found."), {"kind": "Retrieved chunks", "items": items}
-    if strategy == "summary":
-        doc = db.summaries.find_one({"persona_id": persona_id}, {"_id": 0}, sort=[("after_session", -1)])
-        summary = (doc or {}).get("summary_text", "No stored summary was found.")
-        return clip_context(summary), {"kind": "Stored rolling summary", "items": [{"text": summary}]}
-    if strategy == "graph":
-        all_facts = list(db.graph_facts.find({"persona_id": persona_id}, {"_id": 0}))
-        question_lower = question.lower()
-        terms = set(re.findall(r"[a-z0-9]+", question_lower))
-        hits = [f for f in all_facts if any(alias.lower() in terms for alias in f.get("aliases", [])) or f.get("attribute", "").replace("_", " ").lower() in question_lower]
-        chosen = hits or all_facts
-        items = [{"entity": f.get("entity"), "attribute": f.get("attribute"), "value": f.get("value"), "status": "superseded" if f.get("superseded") else "current", "superseded_by": f.get("superseded_by"), "session_id": f.get("session_id")} for f in chosen]
-        context = "\n".join(f"{x['entity']} | {x['attribute']}: {x['value']} ({x['status']}{'; updated to ' + str(x['superseded_by']) if x.get('superseded_by') else ''})" for x in items)
-        return clip_context(context or "No relevant facts were found."), {"kind": "Graph facts", "items": items}
-    raise ValueError("Unknown strategy")
-
-
 def answer(strategy, persona_id, question):
     """Shared answer path: same provider, prompt, and bounded memory context for each strategy."""
-    started = time.perf_counter()
-    context, inspector = build_memory(strategy, persona_id, question)
     try:
         key = st.secrets.get("GROQ_API_KEY", "")
         if not key:
             raise RuntimeError("Provider not configured")
-        response = groq_client(key).chat.completions.create(
-            model=GROQ_MODEL,
-            messages=([{"role": "system", "content": SYSTEM_PROMPT.format(context=context)}]
-                     + st.session_state.get("_current_turns", [])
-                     + [{"role": "user", "content": question}]),
-            temperature=0.2,
-        )
-        elapsed = time.perf_counter() - started
-        usage = response.usage
-        inspector["context_text"] = context
-        inspector["current_chat_turns"] = st.session_state.get("_current_turns", [])
-        return {"answer": response.choices[0].message.content or "I could not form an answer.", "latency_s": elapsed,
-                "tokens_in": usage.prompt_tokens if usage else 0, "tokens_out": usage.completion_tokens if usage else 0,
-                "inspector": inspector}
+        return run_answer(strategy, persona_id, question, get_db(), groq_client(key), st.session_state.get("_current_turns", []))
     except Exception as exc:
         raise RuntimeError("Answer request failed") from exc
 
@@ -129,15 +68,6 @@ def store_chat_log(persona_id, strategy, question, result):
                                       "created_at": datetime.now(timezone.utc)})
     except Exception:
         pass
-
-
-def probe_match(answer_text, ground_truth):
-    truth = set(re.findall(r"[a-z0-9]+", (ground_truth or "").lower()))
-    if not truth:
-        return False
-    # This is a visible lexical heuristic, not a semantic evaluation judge.
-    answer_words = set(re.findall(r"[a-z0-9]+", (answer_text or "").lower()))
-    return len(truth & answer_words) / len(truth) >= 0.5
 
 
 def render_chat(tab_key, strategy, persona_id, probes):
@@ -198,34 +128,195 @@ def render_chat(tab_key, strategy, persona_id, probes):
             st.caption("The exact memory context used for the latest answer will appear here.")
 
 
+BASELINE_STRATEGIES = ["No memory", "Plain RAG", "Rolling summary", "Graph memory"]
+PROBE_TYPES = ["recall", "update", "history", "indirect"]
+
+
+def normalize_strategy(value):
+    name = re.sub(r"[_-]+", " ", str(value or "").strip().lower())
+    compact = " ".join(name.split())
+    if compact in {"no memory", "no memory baseline"}:
+        return "No memory"
+    if compact in {"rag", "plain rag"}:
+        return "Plain RAG"
+    if compact in {"summary", "rolling summary"}:
+        return "Rolling summary"
+    if compact in {"graph", "graph memory", "full graph", "full graph memory"}:
+        return "Graph memory"
+    return str(value or "Unknown strategy")
+
+
+def normalize_probe_type(value):
+    name = str(value or "").strip().lower()
+    return name if name in PROBE_TYPES else name or "unknown"
+
+
+def ablation_variant(value):
+    name = re.sub(r"[_-]+", " ", str(value or "").strip().lower())
+    if "supersession" in name and ("without" in name or "no supersession" in name or "ablation" in name):
+        return "Without supersession"
+    if "entity resolution" in name and ("without" in name or "no entity" in name or "ablation" in name):
+        return "Without entity resolution"
+    if name.strip() in {"graph", "graph memory", "full graph", "full graph memory"}:
+        return "Full graph memory"
+    return None
+
+
+def correct_value(value):
+    if isinstance(value, (bool, np.bool_)):
+        return bool(value)
+    if isinstance(value, (int, float, np.number)) and not np.isnan(value):
+        return bool(value)
+    if isinstance(value, str):
+        if value.strip().lower() in {"true", "yes", "1", "correct"}:
+            return True
+        if value.strip().lower() in {"false", "no", "0", "incorrect"}:
+            return False
+    return None
+
+
+def accuracy_summary(frame, strategy_column, strategy, probe_type=None):
+    subset = frame[frame[strategy_column] == strategy]
+    if probe_type is not None:
+        subset = subset[subset["probe_type_normalized"] == probe_type]
+    subset = subset[subset["correct_normalized"].notna()]
+    count = len(subset)
+    if count == 0:
+        return None, 0, 0
+    correct = int(subset["correct_normalized"].sum())
+    return correct / count, correct, count
+
+
+def render_accuracy_table(frame, strategy_column, strategies, probe_types, overall_label=True):
+    import pandas as pd
+
+    columns = list(probe_types) + (["overall"] if overall_label else [])
+    display_rows, scores = [], []
+    for strategy in strategies:
+        values, numeric = {"Strategy": strategy}, {}
+        for probe_type in columns:
+            score, correct, count = accuracy_summary(frame, strategy_column, strategy, None if probe_type == "overall" else probe_type)
+            title = probe_type.title() if probe_type != "overall" else "Overall"
+            values[title] = f"{score:.0%} ({correct}/{count})" if score is not None else ""
+            numeric[title] = score
+        display_rows.append(values)
+        scores.append(numeric)
+    table = pd.DataFrame(display_rows)
+    score_table = pd.DataFrame(scores)
+    style = pd.DataFrame("", index=table.index, columns=table.columns)
+    for column in score_table:
+        available = score_table[column].dropna()
+        if not available.empty:
+            best = available.max()
+            style.loc[score_table[column] == best, column] = "font-weight: bold"
+    st.dataframe(table.style.apply(lambda _: style, axis=None), use_container_width=True, hide_index=True)
+    return score_table
+
+
 def render_insights():
     st.header("Insights")
+    if st.button("Refresh results", key="refresh_insights"):
+        load_insights.clear()
     try:
         rows = load_insights()
     except Exception:
         friendly_error("Results database")
         return
     if not rows:
-        st.info("Results not loaded yet.")
+        st.info("Results not loaded yet. After seeding, run `python evaluate.py` to evaluate the stored probes and populate this view.")
     else:
         import pandas as pd
+
         frame = pd.DataFrame(rows)
-        if {"strategy", "probe_type", "correct"}.issubset(frame.columns):
-            grouped = frame.groupby(["strategy", "probe_type"], dropna=False).agg(accuracy=("correct", "mean"), queries=("correct", "size")).reset_index()
-            st.subheader("Accuracy by strategy and probe type")
-            st.dataframe(grouped, use_container_width=True, hide_index=True)
-            st.bar_chart(grouped, x="strategy", y="accuracy", color="probe_type")
-        if {"strategy", "latency_s", "cost_usd"}.issubset(frame.columns):
-            st.subheader("Latency and cost per query")
-            st.dataframe(frame.groupby("strategy").agg(latency_s=("latency_s", "mean"), cost_usd=("cost_usd", "mean")).reset_index(), use_container_width=True, hide_index=True)
-        ablations = frame[frame["strategy"].astype(str).str.contains("ablation|without", case=False)] if "strategy" in frame else frame.iloc[0:0]
-        st.subheader("Ablations")
-        if not ablations.empty:
-            st.dataframe(ablations, use_container_width=True, hide_index=True)
+        if "strategy" in frame:
+            frame["strategy_normalized"] = frame["strategy"].map(normalize_strategy)
+            frame["variant"] = frame["strategy"].map(ablation_variant)
         else:
-            st.caption("No ablation results are present.")
+            frame["strategy_normalized"] = "Unknown strategy"
+            frame["variant"] = None
+        frame["probe_type_normalized"] = frame.get("probe_type", pd.Series(index=frame.index, dtype=object)).map(normalize_probe_type)
+        frame["correct_normalized"] = frame.get("correct", pd.Series(index=frame.index, dtype=object)).map(correct_value)
+
+        st.subheader("1. Accuracy by strategy and probe type")
+        probe_counts = {}
+        for probe_type in PROBE_TYPES:
+            typed = frame[frame["probe_type_normalized"] == probe_type]
+            probe_counts[probe_type] = int(typed["probe_id"].nunique()) if "probe_id" in typed else len(typed)
+        st.caption("Unique probes represented in results: " + " · ".join(f"{kind.title()}: {count}" for kind, count in probe_counts.items()) + ". Table counts are result records, so reruns remain visible in the denominators.")
+        render_accuracy_table(frame, "strategy_normalized", BASELINE_STRATEGIES, PROBE_TYPES)
+        chart_rows = []
+        for strategy in BASELINE_STRATEGIES:
+            for probe_type in PROBE_TYPES:
+                score, correct, count = accuracy_summary(frame, "strategy_normalized", strategy, probe_type)
+                if score is not None:
+                    chart_rows.append({"Strategy": strategy, "Probe type": probe_type.title(), "Accuracy": score})
+        if chart_rows:
+            st.bar_chart(pd.DataFrame(chart_rows), x="Strategy", y="Accuracy", color="Probe type")
+
+        st.subheader("2. Cost and latency")
+        metric_columns = ["latency_s", "tokens_in", "tokens_out", "cost_usd"]
+        for column in metric_columns:
+            if column not in frame:
+                frame[column] = pd.NA
+            frame[column] = pd.to_numeric(frame[column], errors="coerce")
+        metric_rows = []
+        for strategy in BASELINE_STRATEGIES:
+            subset = frame[frame["strategy_normalized"] == strategy]
+            metric_rows.append({
+                "Strategy": strategy,
+                "Avg latency (s)": subset["latency_s"].mean(),
+                "Avg tokens in": subset["tokens_in"].mean(),
+                "Avg tokens out": subset["tokens_out"].mean(),
+                "Avg cost per query ($)": subset["cost_usd"].mean(),
+            })
+        metric_table = pd.DataFrame(metric_rows)
+        st.dataframe(metric_table.style.format({"Avg latency (s)": "{:.2f}", "Avg tokens in": "{:.0f}", "Avg tokens out": "{:.0f}", "Avg cost per query ($)": "${:.5f}"}, na_rep=""), use_container_width=True, hide_index=True)
+
+        setup_fields = ["setup_cost_usd", "setup_tokens_in", "setup_tokens_out"]
+        available_setup_fields = [column for column in setup_fields if column in frame and frame[column].notna().any()]
+        if available_setup_fields:
+            setup = frame[frame[available_setup_fields].notna().any(axis=1)].copy()
+            for column in available_setup_fields:
+                setup[column] = pd.to_numeric(setup[column], errors="coerce")
+            setup["run_key"] = setup["run_id"] if "run_id" in setup else setup.index.astype(str)
+            setup = setup.drop_duplicates(["strategy_normalized", "run_key"])
+            notes = []
+            for strategy, group in setup.groupby("strategy_normalized"):
+                parts = []
+                if "setup_cost_usd" in available_setup_fields:
+                    parts.append(f"${group['setup_cost_usd'].sum():.5f} setup cost")
+                if "setup_tokens_in" in available_setup_fields:
+                    parts.append(f"{group['setup_tokens_in'].sum():.0f} setup input tokens")
+                if "setup_tokens_out" in available_setup_fields:
+                    parts.append(f"{group['setup_tokens_out'].sum():.0f} setup output tokens")
+                notes.append(f"{strategy}: {', '.join(parts)}")
+            st.caption("One-time setup, reported separately and excluded from per-query averages: " + "; ".join(notes) + ".")
+        else:
+            st.caption("One-time setup costs/tokens are not recorded in results; per-query averages exclude them.")
+
+        st.subheader("3. Ablations (graph memory only)")
+        ablation_order = ["Full graph memory", "Without supersession", "Without entity resolution"]
+        ablation_frame = frame[frame["variant"].isin(ablation_order)]
+        present_variants = [variant for variant in ablation_order if variant in set(ablation_frame["variant"])]
+        if present_variants:
+            render_accuracy_table(ablation_frame, "variant", present_variants, ["update", "indirect"], overall_label=True)
+            findings = []
+            comparisons = [
+                ("Without supersession", "update", "update questions"),
+                ("Without entity resolution", "indirect", "indirect-reference questions"),
+            ]
+            for variant, probe_type, target in comparisons:
+                full_score, _, _ = accuracy_summary(ablation_frame, "variant", "Full graph memory", probe_type)
+                ablated_score, _, _ = accuracy_summary(ablation_frame, "variant", variant, probe_type)
+                if full_score is not None and ablated_score is not None and ablated_score >= full_score:
+                    findings.append(f"{variant} did not lower accuracy on {target} ({ablated_score:.0%} vs {full_score:.0%} for full graph memory).")
+            if findings:
+                st.caption("Ablation findings: " + " ".join(findings))
+        else:
+            st.caption("No graph ablation results are present.")
+
         st.subheader("Failure cases")
-        failures = frame[frame["correct"] == False] if "correct" in frame else frame.iloc[0:0]
+        failures = frame[frame["correct_normalized"] == False] if "correct_normalized" in frame else frame.iloc[0:0]
         for row in failures.head(25).to_dict("records"):
             st.markdown(f"**{row.get('strategy','')} · {row.get('probe_id','')}** — {row.get('question','')}")
             st.write(f"Ground truth: {row.get('ground_truth','')} · Answer: {row.get('answer','')} · Cause: {row.get('cause','Not specified')}")
@@ -246,7 +337,7 @@ def render_insights():
     st.caption(f"Last updated: {latest.astimezone().strftime('%Y-%m-%d %H:%M %Z') if latest else 'unknown'}")
 
 
-st.title("🧠 Memory Lab")
+st.title("Memory Lab")
 st.write("Does graph memory beat plain RAG for long-term personalization, and at what cost?")
 st.caption("First load may take a minute. All personas are synthetic.")
 try:
