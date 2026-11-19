@@ -1,0 +1,431 @@
+[
+  {
+    "persona_id": "p01",
+    "entity": "Maya Chen",
+    "attribute": "diet",
+    "value": "vegetarian",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Maya",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p01",
+    "entity": "Maya Chen",
+    "attribute": "style",
+    "value": "concise",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Maya",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p01",
+    "entity": "Maya Chen",
+    "attribute": "city",
+    "value": "Portland",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Maya",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p02",
+    "entity": "Ethan Brooks",
+    "attribute": "hobby",
+    "value": "running",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Ethan",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p02",
+    "entity": "Ethan Brooks",
+    "attribute": "city",
+    "value": "Austin",
+    "session_id": 2,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Ethan",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p02",
+    "entity": "Ethan Brooks",
+    "attribute": "city",
+    "value": "Denver",
+    "session_id": 1,
+    "superseded": true,
+    "superseded_by": "Austin",
+    "aliases": [
+      "Ethan",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p02",
+    "entity": "Ethan Brooks",
+    "attribute": "job",
+    "value": "teacher",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Ethan",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p03",
+    "entity": "Priya Nair",
+    "attribute": "diet",
+    "value": "dairy-free",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Priya",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p03",
+    "entity": "Priya Nair",
+    "attribute": "hobby",
+    "value": "guitar",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Priya",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p03",
+    "entity": "Priya Nair",
+    "attribute": "work_style",
+    "value": "visual examples",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Priya",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p04",
+    "entity": "Leo Martinez",
+    "attribute": "job",
+    "value": "photographer",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Leo",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p04",
+    "entity": "Leo Martinez",
+    "attribute": "style",
+    "value": "detailed",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Leo",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p04",
+    "entity": "Leo Martinez",
+    "attribute": "travel",
+    "value": "train when practical",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Leo",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p05",
+    "entity": "Ava Johnson",
+    "attribute": "job",
+    "value": "nurse",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Ava",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p05",
+    "entity": "Ava Johnson",
+    "attribute": "hobby",
+    "value": "half-marathon training",
+    "session_id": 2,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Ava",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p05",
+    "entity": "Ava Johnson",
+    "attribute": "style",
+    "value": "simple",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Ava",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p06",
+    "entity": "Noah Williams",
+    "attribute": "job",
+    "value": "software engineer",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Noah",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p06",
+    "entity": "Noah Williams",
+    "attribute": "diet",
+    "value": "plant-based",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Noah",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p06",
+    "entity": "Noah Williams",
+    "attribute": "preference",
+    "value": "quiet caf\u00e9s",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Noah",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p07",
+    "entity": "Sofia Patel",
+    "attribute": "field",
+    "value": "public policy",
+    "session_id": 2,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Sofia",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p07",
+    "entity": "Sofia Patel",
+    "attribute": "field",
+    "value": "biology",
+    "session_id": 1,
+    "superseded": true,
+    "superseded_by": "public policy",
+    "aliases": [
+      "Sofia",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p07",
+    "entity": "Sofia Patel",
+    "attribute": "style",
+    "value": "step-by-step",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Sofia",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p07",
+    "entity": "Sofia Patel",
+    "attribute": "city",
+    "value": "Boston",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Sofia",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p08",
+    "entity": "Oliver Kim",
+    "attribute": "allergy",
+    "value": "peanuts",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Oliver",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p08",
+    "entity": "Oliver Kim",
+    "attribute": "cuisine",
+    "value": "Korean",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Oliver",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p08",
+    "entity": "Oliver Kim",
+    "attribute": "hobby",
+    "value": "home cooking",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Oliver",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p09",
+    "entity": "Zara Ahmed",
+    "attribute": "job",
+    "value": "lawyer",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Zara",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p09",
+    "entity": "Zara Ahmed",
+    "attribute": "style",
+    "value": "short summaries",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Zara",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p09",
+    "entity": "Zara Ahmed",
+    "attribute": "hobby",
+    "value": "Spanish",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Zara",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p10",
+    "entity": "Miles Carter",
+    "attribute": "instrument",
+    "value": "bass",
+    "session_id": 2,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Miles",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p10",
+    "entity": "Miles Carter",
+    "attribute": "instrument",
+    "value": "guitar",
+    "session_id": 1,
+    "superseded": true,
+    "superseded_by": "bass",
+    "aliases": [
+      "Miles",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p10",
+    "entity": "Miles Carter",
+    "attribute": "workout_time",
+    "value": "evening",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Miles",
+      "the user"
+    ]
+  },
+  {
+    "persona_id": "p10",
+    "entity": "Miles Carter",
+    "attribute": "job",
+    "value": "musician",
+    "session_id": 1,
+    "superseded": false,
+    "superseded_by": null,
+    "aliases": [
+      "Miles",
+      "the user"
+    ]
+  }
+]

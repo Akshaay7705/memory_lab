@@ -1,0 +1,292 @@
+[
+  {
+    "probe_id": "p01-recall",
+    "persona_id": "p01",
+    "type": "recall",
+    "question": "What should you remember about my diet?",
+    "ground_truth": "vegetarian"
+  },
+  {
+    "probe_id": "p01-update",
+    "persona_id": "p01",
+    "type": "update",
+    "question": "What is my current diet?",
+    "ground_truth": "vegetarian",
+    "stale_answer": null
+  },
+  {
+    "probe_id": "p01-history",
+    "persona_id": "p01",
+    "type": "history",
+    "question": "Did my diet ever change? What was it before?",
+    "ground_truth": "No change; vegetarian"
+  },
+  {
+    "probe_id": "p01-indirect",
+    "persona_id": "p01",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to vegetarian, concise, Portland"
+  },
+  {
+    "probe_id": "p02-recall",
+    "persona_id": "p02",
+    "type": "recall",
+    "question": "What should you remember about my hobby?",
+    "ground_truth": "running"
+  },
+  {
+    "probe_id": "p02-update",
+    "persona_id": "p02",
+    "type": "update",
+    "question": "What is my current city?",
+    "ground_truth": "Austin",
+    "stale_answer": "Denver"
+  },
+  {
+    "probe_id": "p02-history",
+    "persona_id": "p02",
+    "type": "history",
+    "question": "Did my city ever change? What was it before?",
+    "ground_truth": "Denver before Austin"
+  },
+  {
+    "probe_id": "p02-indirect",
+    "persona_id": "p02",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to running, Austin, teacher"
+  },
+  {
+    "probe_id": "p03-recall",
+    "persona_id": "p03",
+    "type": "recall",
+    "question": "What should you remember about my diet?",
+    "ground_truth": "dairy-free"
+  },
+  {
+    "probe_id": "p03-update",
+    "persona_id": "p03",
+    "type": "update",
+    "question": "What is my current diet?",
+    "ground_truth": "dairy-free",
+    "stale_answer": null
+  },
+  {
+    "probe_id": "p03-history",
+    "persona_id": "p03",
+    "type": "history",
+    "question": "Did my diet ever change? What was it before?",
+    "ground_truth": "No change; dairy-free"
+  },
+  {
+    "probe_id": "p03-indirect",
+    "persona_id": "p03",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to dairy-free, guitar, visual examples"
+  },
+  {
+    "probe_id": "p04-recall",
+    "persona_id": "p04",
+    "type": "recall",
+    "question": "What should you remember about my job?",
+    "ground_truth": "photographer"
+  },
+  {
+    "probe_id": "p04-update",
+    "persona_id": "p04",
+    "type": "update",
+    "question": "What is my current job?",
+    "ground_truth": "photographer",
+    "stale_answer": null
+  },
+  {
+    "probe_id": "p04-history",
+    "persona_id": "p04",
+    "type": "history",
+    "question": "Did my job ever change? What was it before?",
+    "ground_truth": "No change; photographer"
+  },
+  {
+    "probe_id": "p04-indirect",
+    "persona_id": "p04",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to photographer, detailed, train when practical"
+  },
+  {
+    "probe_id": "p05-recall",
+    "persona_id": "p05",
+    "type": "recall",
+    "question": "What should you remember about my job?",
+    "ground_truth": "nurse"
+  },
+  {
+    "probe_id": "p05-update",
+    "persona_id": "p05",
+    "type": "update",
+    "question": "What is my current job?",
+    "ground_truth": "nurse",
+    "stale_answer": null
+  },
+  {
+    "probe_id": "p05-history",
+    "persona_id": "p05",
+    "type": "history",
+    "question": "Did my job ever change? What was it before?",
+    "ground_truth": "No change; nurse"
+  },
+  {
+    "probe_id": "p05-indirect",
+    "persona_id": "p05",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to nurse, half-marathon training, simple"
+  },
+  {
+    "probe_id": "p06-recall",
+    "persona_id": "p06",
+    "type": "recall",
+    "question": "What should you remember about my job?",
+    "ground_truth": "software engineer"
+  },
+  {
+    "probe_id": "p06-update",
+    "persona_id": "p06",
+    "type": "update",
+    "question": "What is my current job?",
+    "ground_truth": "software engineer",
+    "stale_answer": null
+  },
+  {
+    "probe_id": "p06-history",
+    "persona_id": "p06",
+    "type": "history",
+    "question": "Did my job ever change? What was it before?",
+    "ground_truth": "No change; software engineer"
+  },
+  {
+    "probe_id": "p06-indirect",
+    "persona_id": "p06",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to software engineer, plant-based, quiet caf\u00e9s"
+  },
+  {
+    "probe_id": "p07-recall",
+    "persona_id": "p07",
+    "type": "recall",
+    "question": "What should you remember about my field?",
+    "ground_truth": "public policy"
+  },
+  {
+    "probe_id": "p07-update",
+    "persona_id": "p07",
+    "type": "update",
+    "question": "What is my current field?",
+    "ground_truth": "public policy",
+    "stale_answer": "biology"
+  },
+  {
+    "probe_id": "p07-history",
+    "persona_id": "p07",
+    "type": "history",
+    "question": "Did my field ever change? What was it before?",
+    "ground_truth": "biology before public policy"
+  },
+  {
+    "probe_id": "p07-indirect",
+    "persona_id": "p07",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to public policy, step-by-step, Boston"
+  },
+  {
+    "probe_id": "p08-recall",
+    "persona_id": "p08",
+    "type": "recall",
+    "question": "What should you remember about my allergy?",
+    "ground_truth": "peanuts"
+  },
+  {
+    "probe_id": "p08-update",
+    "persona_id": "p08",
+    "type": "update",
+    "question": "What is my current allergy?",
+    "ground_truth": "peanuts",
+    "stale_answer": null
+  },
+  {
+    "probe_id": "p08-history",
+    "persona_id": "p08",
+    "type": "history",
+    "question": "Did my allergy ever change? What was it before?",
+    "ground_truth": "No change; peanuts"
+  },
+  {
+    "probe_id": "p08-indirect",
+    "persona_id": "p08",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to peanuts, Korean, home cooking"
+  },
+  {
+    "probe_id": "p09-recall",
+    "persona_id": "p09",
+    "type": "recall",
+    "question": "What should you remember about my job?",
+    "ground_truth": "lawyer"
+  },
+  {
+    "probe_id": "p09-update",
+    "persona_id": "p09",
+    "type": "update",
+    "question": "What is my current job?",
+    "ground_truth": "lawyer",
+    "stale_answer": null
+  },
+  {
+    "probe_id": "p09-history",
+    "persona_id": "p09",
+    "type": "history",
+    "question": "Did my job ever change? What was it before?",
+    "ground_truth": "No change; lawyer"
+  },
+  {
+    "probe_id": "p09-indirect",
+    "persona_id": "p09",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to lawyer, short summaries, Spanish"
+  },
+  {
+    "probe_id": "p10-recall",
+    "persona_id": "p10",
+    "type": "recall",
+    "question": "What should you remember about my instrument?",
+    "ground_truth": "bass"
+  },
+  {
+    "probe_id": "p10-update",
+    "persona_id": "p10",
+    "type": "update",
+    "question": "What is my current instrument?",
+    "ground_truth": "bass",
+    "stale_answer": "guitar"
+  },
+  {
+    "probe_id": "p10-history",
+    "persona_id": "p10",
+    "type": "history",
+    "question": "Did my instrument ever change? What was it before?",
+    "ground_truth": "guitar before bass"
+  },
+  {
+    "probe_id": "p10-indirect",
+    "persona_id": "p10",
+    "type": "indirect",
+    "question": "Suggest something I might enjoy, taking my preferences into account.",
+    "ground_truth": "A suggestion suited to bass, evening, musician"
+  }
+]

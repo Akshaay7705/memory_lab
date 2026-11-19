@@ -1,0 +1,52 @@
+[
+  {
+    "persona_id": "p01",
+    "after_session": 3,
+    "summary_text": "Maya Chen: A product designer who prefers concise, vegetarian-friendly plans. Current remembered details: diet: vegetarian; style: concise; city: Portland."
+  },
+  {
+    "persona_id": "p02",
+    "after_session": 3,
+    "summary_text": "Ethan Brooks: A teacher who runs on weekends and recently moved to Austin. Current remembered details: hobby: running; city: Austin; job: teacher. Earlier city was Denver; updated to Austin in session 2."
+  },
+  {
+    "persona_id": "p03",
+    "after_session": 3,
+    "summary_text": "Priya Nair: A data analyst learning guitar and avoiding dairy. Current remembered details: diet: dairy-free; hobby: guitar; work style: visual examples."
+  },
+  {
+    "persona_id": "p04",
+    "after_session": 3,
+    "summary_text": "Leo Martinez: A freelance photographer who likes detailed travel options. Current remembered details: job: photographer; style: detailed; travel: train when practical."
+  },
+  {
+    "persona_id": "p05",
+    "after_session": 3,
+    "summary_text": "Ava Johnson: A nurse who is training for a half marathon and likes simple recipes. Current remembered details: job: nurse; hobby: half-marathon training; style: simple."
+  },
+  {
+    "persona_id": "p06",
+    "after_session": 3,
+    "summary_text": "Noah Williams: A software engineer who prefers plant-based meals and quiet caf\u00e9s. Current remembered details: job: software engineer; diet: plant-based; preference: quiet caf\u00e9s."
+  },
+  {
+    "persona_id": "p07",
+    "after_session": 3,
+    "summary_text": "Sofia Patel: A graduate student who recently switched from biology to public policy. Current remembered details: field: public policy; style: step-by-step; city: Boston. Earlier field was biology; updated to public policy in session 2."
+  },
+  {
+    "persona_id": "p08",
+    "after_session": 3,
+    "summary_text": "Oliver Kim: A home cook who avoids peanuts and enjoys Korean food. Current remembered details: allergy: peanuts; cuisine: Korean; hobby: home cooking."
+  },
+  {
+    "persona_id": "p09",
+    "after_session": 3,
+    "summary_text": "Zara Ahmed: A lawyer who likes short summaries and is learning Spanish. Current remembered details: job: lawyer; style: short summaries; hobby: Spanish."
+  },
+  {
+    "persona_id": "p10",
+    "after_session": 3,
+    "summary_text": "Miles Carter: A musician who recently changed from guitar to bass and prefers evening workouts. Current remembered details: instrument: bass; workout time: evening; job: musician. Earlier instrument was guitar; updated to bass in session 2."
+  }
+]
