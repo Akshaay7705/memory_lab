@@ -315,12 +315,15 @@ def render_insights():
         else:
             st.caption("No graph ablation results are present.")
 
-        st.subheader("Failure cases")
-        failures = frame[frame["correct_normalized"] == False] if "correct_normalized" in frame else frame.iloc[0:0]
-        for row in failures.head(25).to_dict("records"):
-            st.markdown(f"**{row.get('strategy','')} · {row.get('probe_id','')}** — {row.get('question','')}")
-            st.write(f"Ground truth: {row.get('ground_truth','')} · Answer: {row.get('answer','')} · Cause: {row.get('cause','Not specified')}")
-    st.subheader("Limitations")
+    #     st.subheader("Failure cases")
+    #     failures = frame[frame["correct_normalized"] == False] if "correct_normalized" in frame else frame.iloc[0:0]
+    #     for row in failures.head(25).to_dict("records"):
+    #         st.markdown(f"**{row.get('strategy','')} · {row.get('probe_id','')}** — {row.get('question','')}")
+    #         st.write(f"Ground truth: {row.get('ground_truth','')} · Answer: {row.get('answer','')} · Cause: {row.get('cause','Not specified')}")
+    
+    
+    
+    st.subheader("Limitations")     
     st.write("Synthetic personas; LLM-written transcripts; small sample (10 personas, N probes); single LLM; fixed attributes; lexical hash vectors for Plain RAG; no real users yet.")
     try:
         db = get_db()
@@ -340,6 +343,10 @@ def render_insights():
 st.title("Memory Lab")
 st.write("Does graph memory beat plain RAG for long-term personalization, and at what cost?")
 st.caption("First load may take a minute. All personas are synthetic.")
+st.markdown(
+    '### Want to contribute or check out real user data? '
+    '[Click here](https://memory-lab-user.streamlit.app/)'
+)
 try:
     personas = load_personas()
 except Exception:
